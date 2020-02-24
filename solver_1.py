@@ -237,6 +237,7 @@ for x in range(row_count):
 
 	four_factors.append([f-r_f,hml,smb,mom])
 
+Z = np.array(four_factors, np.float32)
 # Now three_factors is a list of list
 X = np.array(three_factors, np.float32)
 # Xw = y regression
@@ -246,4 +247,12 @@ for company_name in companies:
 	y = y - r_f
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
+	print(company_name,model.coef_,r_sq)
+
+
+for company_name in companies:
+	y = companies[company_name]['ROI']
+	y = y - r_f
+	model = LinearRegression().fit(Z, y)
+	r_sq = model.score(Z, y)
 	print(company_name,model.coef_,r_sq)

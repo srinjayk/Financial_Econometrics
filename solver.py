@@ -79,12 +79,17 @@ companylist =[]
 # print(len(companies["ALCON AG"]['CAP']))
 # use row_count in place of 1 
 # 1 just used for testing
-for x in range(1):
+
+for company_name in companies:
+	companylist.append(company_name)
+
+for x in range(row_count):
 	for company_name in companies:
 		marketcap.append(companies[company_name]['CAP'][x])
 		priceindex.append(companies[company_name]['PI'][x])
 		growth.append(companies[company_name]['ROI'][x])
-		companylist.append(company_name)
+		# if x==0:
+		# 	companylist.append(company_name)
 		if companies[company_name]['PI'][x] > 0:
 			# companies[company_name]['RAT'][x] = companies[company_name]['CAP'][x]/companies[company_name]['PI'][x]
 			booktomarket.append(companies[company_name]['CAP'][x]/companies[company_name]['PI'][x])
@@ -137,10 +142,7 @@ for x in range(1):
 	# print("\nSG")
 	# print(SG)
 
-	marketcap = []
-	priceindex = []
-	growth = []
-	booktomarket = []
+	
 	bvreturnarr = []
 	bnreturnarr = []
 	bgreturnarr = []
@@ -168,26 +170,66 @@ for x in range(1):
 	# print(snreturnarr)
 	# print(sgreturnarr)
 
-	bvreturn = np.average(bvreturnarr)
-	bnreturn = np.average(bnreturnarr)
-	bgreturn = np.average(bgreturnarr)
-	svreturn = np.average(svreturnarr)
-	snreturn = np.average(snreturnarr)
-	sgreturn = np.average(sgreturnarr)
+	if len(bvreturnarr)> 0:
+		bvreturn = np.average(bvreturnarr)
+	else:
+		bvreturn = 0
 
-	print(bvreturn)
-	print(bnreturn)
-	print(bgreturn)
-	print(svreturn)
-	print(snreturn)
-	print(sgreturn)
+	if len(bnreturnarr)> 0:
+		bnreturn = np.average(bnreturnarr)
+	else:
+		bnreturn = 0
+
+	if len(bgreturnarr)> 0:
+		bgreturn = np.average(bgreturnarr)
+	else:
+		bgreturn = 0
+
+
+	if len(svreturnarr)> 0:
+		svreturn = np.average(svreturnarr)
+	else:
+		svreturn = 0
+
+	if len(snreturnarr)> 0:
+		snreturn = np.average(snreturnarr)
+	else:
+		snreturn = 0
+
+	if len(sgreturnarr)> 0:
+		sgreturn = np.average(sgreturnarr)
+	else:
+		sgreturn = 0
+
+
+	# bnreturn = np.average(bnreturnarr)
+	# bgreturn = np.average(bgreturnarr)
+	# svreturn = np.average(svreturnarr)
+	# snreturn = np.average(snreturnarr)
+	# sgreturn = np.average(sgreturnarr)
+
+	# print(bvreturn)
+	# print(bnreturn)
+	# print(bgreturn)
+	# print(svreturn)
+	# print(snreturn)
+	# print(sgreturn)
 
 	smb = (svreturn+snreturn+sgreturn)/3 - (bvreturn+bnreturn+bgreturn)/3 
 
 	hml = (svreturn+bvreturn)/2 - (sgreturn+bgreturn)/2
 
-	print(smb)
-	print(hml)
+	f = np.average(growth)
+
+	print("SMB",smb,"HML",hml,"F",f)
+	print()
+	# print()
+
+	marketcap = []
+	priceindex = []
+	growth = []
+	booktomarket = []
+
 
 # print("-------")
 # print(marketcap)

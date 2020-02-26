@@ -14,15 +14,15 @@ def checkifnan(num):
 	else:
 		return num
 
-def calculateWeightedParam(companies,listofcompanies):
+def calculateWeightedParam(companies,listofcompanies,x):
 	totalsum = 0
 	capsum = 0
 
 	for company_name in listofcompanies:
-		totalsum = totalsum + companies[company_name]['CAP']*companies[company_name]['ROI']
-		capsum = totalsum + companies[company_name]['ROI']
+		totalsum = totalsum + companies[company_name]['CAP'][x]*companies[company_name]['ROI'][x]
+		capsum = totalsum + companies[company_name]['ROI'][x]
 
-	return (totalsum/capsum)
+	return (totalsum/(capsum+eps))
 
 def calculateNormalParam(companies,listofcompanies,x):
 	returnarray = []
@@ -161,53 +161,53 @@ for x in range(row_count):
 	LS = list(set(loserfirm) & set(smallfirm))
 
 	if len(BV)> 0:
-		bvreturn = calculateNormalParam(companies,BV,x)
+		bvreturn = calculateWeightedParam(companies,BV,x)
 	else:
 		bvreturn = 0
 
 	if len(BN)> 0:
-		bnreturn = calculateNormalParam(companies,BN,x)
+		bnreturn = calculateWeightedParam(companies,BN,x)
 	else:
 		bnreturn = 0
 
 	if len(BG)> 0:
-		bgreturn = calculateNormalParam(companies,BG,x)
+		bgreturn = calculateWeightedParam(companies,BG,x)
 	else:
 		bgreturn = 0
 
 
 	if len(SV)> 0:
-		svreturn = calculateNormalParam(companies,SV,x)
+		svreturn = calculateWeightedParam(companies,SV,x)
 	else:
 		svreturn = 0
 
 	if len(SN)> 0:
-		snreturn = calculateNormalParam(companies,SN,x)
+		snreturn = calculateWeightedParam(companies,SN,x)
 	else:
 		snreturn = 0
 
 	if len(SG)> 0:
-		sgreturn = calculateNormalParam(companies,SG,x)
+		sgreturn = calculateWeightedParam(companies,SG,x)
 	else:
 		sgreturn = 0
 
 	if len(WB)>0:
-		wbreturn = calculateNormalParam(companies,WB,x)
+		wbreturn = calculateWeightedParam(companies,WB,x)
 	else:
 		wbreturn = 0
 
 	if len(WS)>0:
-		wsreturn = calculateNormalParam(companies,WS,x)
+		wsreturn = calculateWeightedParam(companies,WS,x)
 	else:
 		wsreturn = 0
 
 	if len(LB)>0:
-		lbreturn = calculateNormalParam(companies,LB,x)
+		lbreturn = calculateWeightedParam(companies,LB,x)
 	else:
 		lbreturn = 0
 
 	if len(LS)>0:
-		lsreturn = calculateNormalParam(companies,LS,x)
+		lsreturn = calculateWeightedParam(companies,LS,x)
 	else:
 		lsreturn = 0
 
@@ -228,11 +228,16 @@ Z = np.array(four_factors, np.float32)
 X = np.array(three_factors, np.float32)
 # Xw = y regression
 # Now apply linear regression for each company
+
+print(X)
+
 for company_name in companies:
 	y = companies[company_name]['ROI']
 	y = y - r_f
+	print(y)
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
+
 	print(company_name,model.coef_,r_sq)
 
 

@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 
 
-eps = 1e-6
+eps = 1
 r_f = 0.5
 
 def checkifnan(num):
@@ -14,26 +14,24 @@ def checkifnan(num):
 	else:
 		return num
 
-def calculateWeightedParam(companies,listofcompanies,x,priceindexreturn):
-	totalsum = 0
-	capsum = 0
-
+def calculateWeightedParam(companies,listofcompanies,x):
+	totalsum = 0.0
+	capsum = 0.0
 	for company_name in listofcompanies:
-		# totalsum = totalsum + companies[company_name]['CAP'][x]*companies[company_name]['ROI'][x]
-		# capsum = totalsum + companies[company_name]['ROI'][x]
-		totalsum = totalsum + companies[company_name]['CAP'][x]*priceindexreturn[x]
-		capsum = totalsum + priceindexreturn[x]
+		# print(companies[company_name]['PIreturn'][x])
+		totalsum += companies[company_name]['CAP'][x]*companies[company_name]['PIreturn'][x]
+		capsum += companies[company_name]['CAP'][x]
+	# print("totalsum: ",totalsum ," capsum: ",capsum)
+	return (totalsum/(capsum))
 
-	return (totalsum/(capsum+eps))
+# def calculateNormalParam(companies,listofcompanies,x):
+# 	returnarray = []
 
-def calculateNormalParam(companies,listofcompanies,x,priceindexreturn):
-	returnarray = []
+# 	for company_name in listofcompanies:
+# 		# returnarray.append(companies[company_name]['ROI'][x])
+# 		returnarray.append(priceindexreturn[x])
 
-	for company_name in listofcompanies:
-		# returnarray.append(companies[company_name]['ROI'][x])
-		returnarray.append(priceindexreturn[x])
-
-	return np.average(returnarray)
+# 	return np.average(returnarray)
 
 
 # def find3factors(time_row):
@@ -101,36 +99,55 @@ growth = []
 booktomarketarr = []
 booktomarket = []
 companylist =[]
+smblist = []
+hmllist = []
 
 for company_name in companies:
 	companylist.append(company_name)
 
 three_factors = []
 four_factors = []
-
-priceindexreturn = []
-priceindexreturn.append(0)
+print(row_count)
 
 for x in range(row_count):
+	# marketcap.append([])
+	# priceindex.append([])
+	# .append([])
+	marketcap = []
+	priceindex = []
+	growth = []
+	booktomarket = []
+
 	for company_name in companies:
+		if(x == 0):
+			companies[company_name]['PIreturn'] = []
+			companies[company_name]['PIreturn'].append(0.0)
+
 		marketcap.append(companies[company_name]['CAP'][x])
-		priceindex.append(companies[company_name]['PI'][x])
+		# priceindex.append(companies[company_name]['PI'][x])
 		growth.append(companies[company_name]['ROI'][x])
 		if x > 0:
-			priceindexreturn.append((companies[company_name]['PI'][x]-companies[company_name]['PI'][x-1])/(companies[company_name]['PI'][x-1]+eps))
+			if companies[company_name]['PI'][x-1] ==0:
+				pireturn=0
+			else:
+				pireturn = 100.00*(companies[company_name]['PI'][x]-companies[company_name]['PI'][x-1])/(companies[company_name]['PI'][x-1])
+			companies[company_name]['PIreturn'].append(pireturn)
+			# print(pireturn)
 		# booktomarket.append(companies[company_name]['CAP'][x]/(companies[company_name]['PI'][x] + eps))
 		# booktomarket.append(priceindexreturn[x])
 		booktomarket.append(companies[company_name]['ROI'][x])
 	
-	marketcaparr.append(marketcap)
-	priceindexarr.append(priceindex)
-	growtharr.append(growth)
-	booktomarketarr.append(booktomarket)
+	# marketcaparr.append(marketcap)
+	# # priceindexarr.append(priceindex)
+	# growtharr.append(growth)
+	# booktomarketarr.append(booktomarket)
 
 	high = np.percentile(booktomarket,70)
+	# print(high)
 	low = np.percentile(booktomarket,30)
 	small = np.percentile(marketcap,30)
 	big = np.percentile(marketcap,70)
+	# print("----\n\n",big)
 	win = np.percentile(growth,70)
 	lose = np.percentile(growth,30)
 
@@ -169,61 +186,70 @@ for x in range(row_count):
 	WS = list(set(winnerfirm) & set(smallfirm))
 	LB = list(set(loserfirm) & set(bigfirm))
 	LS = list(set(loserfirm) & set(smallfirm))
-
+	# print("===================================================")
+	# print("			V    	N    	G")
+	# print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
+	# print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
+	# print("====================================================")
+	# exit()
 	if len(BV)> 0:
-		bvreturn = calculateWeightedParam(companies,BV,x,priceindexreturn)
+		bvreturn = calculateWeightedParam(companies,BV,x)
+		# print("bvreturn",bvreturn,x)
+		# exit()
 	else:
 		bvreturn = 0
 
 	if len(BN)> 0:
-		bnreturn = calculateWeightedParam(companies,BN,x,priceindexreturn)
+		bnreturn = calculateWeightedParam(companies,BN,x)
 	else:
 		bnreturn = 0
 
 	if len(BG)> 0:
-		bgreturn = calculateWeightedParam(companies,BG,x,priceindexreturn)
+		bgreturn = calculateWeightedParam(companies,BG,x)
 	else:
 		bgreturn = 0
 
 
 	if len(SV)> 0:
-		svreturn = calculateWeightedParam(companies,SV,x,priceindexreturn)
+		svreturn = calculateWeightedParam(companies,SV,x)
 	else:
 		svreturn = 0
 
 	if len(SN)> 0:
-		snreturn = calculateWeightedParam(companies,SN,x,priceindexreturn)
+		snreturn = calculateWeightedParam(companies,SN,x)
 	else:
 		snreturn = 0
 
 	if len(SG)> 0:
-		sgreturn = calculateWeightedParam(companies,SG,x,priceindexreturn)
+		sgreturn = calculateWeightedParam(companies,SG,x)
 	else:
 		sgreturn = 0
 
 	if len(WB)>0:
-		wbreturn = calculateWeightedParam(companies,WB,x,priceindexreturn)
+		wbreturn = calculateWeightedParam(companies,WB,x)
 	else:
 		wbreturn = 0
 
 	if len(WS)>0:
-		wsreturn = calculateWeightedParam(companies,WS,x,priceindexreturn)
+		wsreturn = calculateWeightedParam(companies,WS,x)
 	else:
 		wsreturn = 0
 
 	if len(LB)>0:
-		lbreturn = calculateWeightedParam(companies,LB,x,priceindexreturn)
+		lbreturn = calculateWeightedParam(companies,LB,x)
 	else:
 		lbreturn = 0
 
 	if len(LS)>0:
-		lsreturn = calculateWeightedParam(companies,LS,x,priceindexreturn)
+		lsreturn = calculateWeightedParam(companies,LS,x)
 	else:
 		lsreturn = 0
 
 	smb = (svreturn+snreturn+sgreturn)/3 - (bvreturn+bnreturn+bgreturn)/3 
+	smblist.append(smb)
 
 	hml = (svreturn+bvreturn)/2 - (sgreturn+bgreturn)/2
+	hmllist.append(hml)
 
 	f = np.average(growth)
 
@@ -237,14 +263,16 @@ Z = np.array(four_factors, np.float32)
 # Now three_factors is a list of list
 X = np.array(three_factors, np.float32)
 # Xw = y regression
-# Now apply linear regression for each company
+# Now apply4 linear regression for each company
 
-print(X)
+# print(X)
+print(hmllist)
+print(smblist)
 
 for company_name in companies:
 	y = companies[company_name]['ROI']
 	y = y - r_f
-	print(y)
+	# print(y)
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
 

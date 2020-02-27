@@ -100,13 +100,13 @@ for company_name in companies:
 		companies[company_name]['CAP'] = np.array([0.]*row_count)
 
 marketcaparr = []
-marketcap = []
+# marketcap = []
 priceindexarr = []
-priceindex = []
+# priceindex = []
 growtharr = []
-growth = []
+# growth = []
 booktomarketarr = []
-booktomarket = []
+# booktomarket = []
 companylist =[]
 smblist = []
 hmllist = []
@@ -129,6 +129,7 @@ for x in range(row_count):
 	priceindex = []
 	growth = []
 	booktomarket = []
+	pireturnarr = []
 
 	for company_name in companies:
 		if(x == 0):
@@ -147,6 +148,7 @@ for x in range(row_count):
 			# print(pireturn)
 		# booktomarket.append(companies[company_name]['CAP'][x]/(companies[company_name]['PI'][x] + eps))
 		# booktomarket.append(priceindexreturn[x])
+		pireturnarr.append(companies[company_name]['PIreturn'][x])
 		booktomarket.append(companies[company_name]['ROI'][x])
 	
 	# marketcaparr.append(marketcap)
@@ -160,8 +162,8 @@ for x in range(row_count):
 	small = np.percentile(marketcap,30)
 	big = np.percentile(marketcap,70)
 	# print("----\n\n",big)
-	win = np.percentile(growth,70)
-	lose = np.percentile(growth,30)
+	win = np.percentile(pireturnarr,70)
+	lose = np.percentile(pireturnarr,30)
 
 	valuefirm = []
 	growthfirm = []
@@ -182,9 +184,9 @@ for x in range(row_count):
 			neutralfirm.append(companylist[y])
 		elif booktomarket[y] > high:
 			valuefirm.append(companylist[y])
-		if growth[y] > win:
+		if pireturnarr[y] > win:
 			winnerfirm.append(companylist[y])
-		elif growth[y] < lose:
+		elif pireturnarr[y] < lose:
 			loserfirm.append(companylist[y])
 
 
@@ -198,11 +200,19 @@ for x in range(row_count):
 	WS = list(set(winnerfirm) & set(smallfirm))
 	LB = list(set(loserfirm) & set(bigfirm))
 	LS = list(set(loserfirm) & set(smallfirm))
-	# print("===================================================")
-	# print("			V    	N    	G")
-	# print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
-	# print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
-	# print("====================================================")
+
+	print("===================================================")
+	print("			V    	   N    	G")
+	print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
+	print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
+	print("====================================================")
+
+	print("===================================================")
+	print("			W    	L")
+	print("S  		%d    	%d"%(len(WS),len(LS)))
+	print("B  		%d    	%d"%(len(WB),len(LB)))
+	print("====================================================")
+
 	# exit()
 	if len(BV)> 0:
 		bvreturn = calculateWeightedParam(companies,BV,x)
@@ -285,7 +295,7 @@ X = np.array(three_factors, np.float32)
 # print(hmllist)
 # print(smblist)
 # print(t)
-# print(momlist)
+print(momlist)
 # print(flist)
 
 smblist[0]=1
@@ -303,13 +313,16 @@ for i in range(1,len(flist)):
 momlist[0]=1
 for i in range(1,len(momlist)):
 	momlist[i]=momlist[i]/100+momlist[i-1]
-print(momlist)
 
-plt.plot(date,smblist,label='smb')
-plt.plot(date,hmllist,label='hml')
-plt.plot(date,flist,label='f')
+# print(smblist)
+# print(momlist)
+# print(hmllist)
+
+# plt.plot(date,smblist,label='smb')
+# plt.plot(date,hmllist,label='hml')
+# plt.plot(date,flist,label='f')
 plt.plot(date,momlist,label='mom')
-plt.title('HML and SMB and f vs date')
+plt.title('MOM vs date')
 plt.xlabel('Date')
 plt.ylabel('Commulative return')
 plt.legend(loc=2)
@@ -322,7 +335,7 @@ for company_name in companies:
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
 
-	print(company_name,model.coef_,r_sq)
+	print(company_name," & ",model.coef_," & ",r_sq)
 
 
 for company_name in companies:
@@ -330,4 +343,4 @@ for company_name in companies:
 	y = y - r_f
 	model = LinearRegression().fit(Z, y)
 	r_sq = model.score(Z, y)
-	print(company_name,model.coef_,r_sq)
+	print(company_name," & ",model.coef_,"&",r_sq)

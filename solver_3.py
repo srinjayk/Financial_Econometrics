@@ -3,7 +3,7 @@ from pandas import ExcelWriter
 from pandas import ExcelFile
 import numpy as np
 from sklearn.linear_model import LinearRegression
-
+import matplotlib.pyplot as plt
 
 eps = 1
 r_f = 0.5
@@ -46,6 +46,13 @@ companies = dict()
 j = 0
 company_name = ""
 prev_err = False
+
+date=[]
+l=df.iloc[4:(4+row_count),0].tolist()
+for x in range(row_count):
+	date.append(str(l[x]).split()[0])
+
+
 for i,col in enumerate(columns):
 	# Calculate the actual offset
 	idx = i + 1
@@ -101,13 +108,16 @@ booktomarket = []
 companylist =[]
 smblist = []
 hmllist = []
+flist=[]
+momlist=[]
+t=[]
 
 for company_name in companies:
 	companylist.append(company_name)
 
 three_factors = []
 four_factors = []
-print(row_count)
+# print(row_count)
 
 for x in range(row_count):
 	# marketcap.append([])
@@ -186,11 +196,11 @@ for x in range(row_count):
 	WS = list(set(winnerfirm) & set(smallfirm))
 	LB = list(set(loserfirm) & set(bigfirm))
 	LS = list(set(loserfirm) & set(smallfirm))
-	# print("===================================================")
-	# print("			V    	N    	G")
-	# print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
-	# print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
-	# print("====================================================")
+	print("===================================================")
+	print("			V    	N    	G")
+	print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
+	print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
+	print("====================================================")
 	# exit()
 	if len(BV)> 0:
 		bvreturn = calculateWeightedParam(companies,BV,x)
@@ -252,12 +262,16 @@ for x in range(row_count):
 	hmllist.append(hml)
 
 	f = np.average(growth)
+	flist.append(f)
 
 	mom = (wsreturn+wbreturn)/2 - (lsreturn+lbreturn)/2
+	momlist.append(mom)
 
 	three_factors.append([1,f-r_f,hml,smb])
 
 	four_factors.append([1,f-r_f,hml,smb,mom])
+
+	t.append(x)
 
 Z = np.array(four_factors, np.float32)
 # Now three_factors is a list of list
@@ -265,9 +279,34 @@ X = np.array(three_factors, np.float32)
 # Xw = y regression
 # Now apply4 linear regression for each company
 
-# print(X)
-print(hmllist)
-print(smblist)
+print(X)
+# print(hmllist)
+# print(smblist)
+# print(t)
+
+smblist[0]=1
+for i in range(1,len(smblist)):
+	smblist[i]=smblist[i]/100+smblist[i-1]
+
+hmllist[0]=1
+for i in range(1,len(hmllist)):
+	hmllist[i]=hmllist[i]/100+hmllist[i-1]
+
+flist[0]=1
+for i in range(1,len(flist)):
+	flist[i]=flist[i]/100+flist[i-1]
+
+momlist[0]=1
+for i in range(1,len(momlist)):
+	momlist[i]=momlist[i]/100+momlist[i-1]
+
+plt.plot(date,smblist,label='smb')
+plt.plot(date,hmllist,label='hml')
+plt.title('HML and SMB vs date')
+plt.xlabel('Date')
+plt.ylabel('Commulative return')
+plt.legend(loc=2)
+plt.show()
 
 for company_name in companies:
 	y = companies[company_name]['ROI']

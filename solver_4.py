@@ -119,6 +119,7 @@ for company_name in companies:
 
 three_factors = []
 four_factors = []
+new_mom = []
 # print(row_count)
 
 for x in range(row_count):
@@ -290,7 +291,6 @@ Z = np.array(four_factors, np.float32)
 X = np.array(three_factors, np.float32)
 # Xw = y regression
 # Now apply4 linear regression for each company
-print("/////////////////////////////////")
 # print(hmllist)
 # print(smblist)
 # print(t)
@@ -335,11 +335,8 @@ for company_name in companies:
 	# print(y)
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
-	# print(company_name," & ",model.coef_[1]," & ",model.coef_[2]," & ",model.coef_[3]," & ",r_sq," \\\\")
-	print(y,model.intercept_,model.coef_)
-print(X)
-
-exit()
+	print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," \\\\")
+	# print(y,model.intercept_,model.coef_)
 
 print("==============================================================================================================================================")
 print("==============================================================================================================================================")
@@ -352,4 +349,4 @@ for company_name in companies:
 	y = y - r_f
 	model = LinearRegression().fit(Z, y)
 	r_sq = model.score(Z, y)
-	print(company_name," & ",model.coef_[1]," & ",model.coef_[2]," & ",model.coef_[3]," & ",model.coef_[4]," & ",r_sq," \\\\")
+	print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," & ",round(model.coef_[3],3)," \\\\")

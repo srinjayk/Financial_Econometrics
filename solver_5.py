@@ -113,18 +113,41 @@ hmllist = []
 flist=[]
 momlist=[]
 t=[]
-# y_r=[]
+y_r=[]
 
-# for x in range(0,row_count,12):
-# 	for company_name in companies:
-# 		if x == 0:
-# 			pireturn = companies[company_name]['PI'][]
-# 		else if x > 0:
-# 			pireturn = 100.00*(companies[company_name]['PI'][x]-companies[company_name]['PI'][x-11])/(companies[company_name]['PI'][x-11])
-# 		y_r.append(pireturn)
+for company_name  in companies:
+	companies[company_name]['YR'] = []
+	for x in range(row_count):
+		companies[company_name]['YR'].append(0.0)
+
+for x in range(0,row_count,12):
+	for company_name in companies:
+		# companies[company_name]['YR'] = []
+		# for  iters in range(0,row_count):
+		# 	companies[company_name]['YR'].append(0.0)
+		for y in range(12):
+			if y == 0:
+				if x == 0:
+					if companies[company_name]['PI'][x] > 0:
+						companies[company_name]['YR'][x+y] = 100.00*(companies[company_name]['PI'][x+11]-companies[company_name]['PI'][x])/(companies[company_name]['PI'][x])
+				elif x > 0:
+					if companies[company_name]['PI'][x-11] > 0:
+						companies[company_name]['YR'][x+y] = 100.00*(companies[company_name]['PI'][x]-companies[company_name]['PI'][x-11])/(companies[company_name]['PI'][x-11])
+			elif y > 0:
+				if x == 0:
+					if companies[company_name]['PI'][x] > 0:
+						companies[company_name]['YR'][x+y] = 100.00*(companies[company_name]['PI'][x+11]-companies[company_name]['PI'][x])/(companies[company_name]['PI'][x])
+				elif x > 0:
+					if companies[company_name]['PI'][x-11] > 0:
+						companies[company_name]['YR'][x+y] = 100.00*(companies[company_name]['PI'][x]-companies[company_name]['PI'][x-11])/(companies[company_name]['PI'][x-11])
+			# 	pireturn = 100.00*(companies[company_name]['PI'][x]-companies[company_name]['PI'][x-11])/(companies[company_name]['PI'][x-11])
+			# y_r.append(pireturn)
+		# print(companies[company_name]['YR'])
+
 
 
 for company_name in companies:
+	# print(companies[company_name]['YR'])
 	companylist.append(company_name)
 
 three_factors = []
@@ -141,6 +164,7 @@ for x in range(row_count):
 	growth = []
 	booktomarket = []
 	pireturnarr = []
+	new_mom_arr = []
 
 	for company_name in companies:
 		if(x == 0):
@@ -161,6 +185,7 @@ for x in range(row_count):
 		# booktomarket.append(priceindexreturn[x])
 		pireturnarr.append(companies[company_name]['PIreturn'][x])
 		booktomarket.append(companies[company_name]['ROI'][x])
+		new_mom_arr.append(companies[company_name]['YR'][x])
 	
 	# marketcaparr.append(marketcap)
 	# # priceindexarr.append(priceindex)
@@ -173,8 +198,11 @@ for x in range(row_count):
 	small = np.percentile(marketcap,30)
 	big = np.percentile(marketcap,70)
 	# print("----\n\n",big)
-	win = np.percentile(pireturnarr,70)
-	lose = np.percentile(pireturnarr,30)
+	# win = np.percentile(pireturnarr,70)
+	# lose = np.percentile(pireturnarr,30)
+
+	win = np.percentile(new_mom_arr,70)
+	lose = np.percentile(new_mom_arr,30)
 
 	valuefirm = []
 	growthfirm = []
@@ -195,9 +223,14 @@ for x in range(row_count):
 			neutralfirm.append(companylist[y])
 		elif booktomarket[y] > high:
 			valuefirm.append(companylist[y])
-		if pireturnarr[y] > win:
+		# if pireturnarr[y] > win:
+		# 	winnerfirm.append(companylist[y])
+		# elif pireturnarr[y] < lose:
+		# 	loserfirm.append(companylist[y])
+
+		if new_mom_arr[y] > win:
 			winnerfirm.append(companylist[y])
-		elif pireturnarr[y] < lose:
+		elif new_mom_arr[y] < lose:
 			loserfirm.append(companylist[y])
 
 
@@ -327,36 +360,36 @@ for i in range(1,len(momlist)):
 # print(momlist)
 # print(hmllist)
 
-# plt.plot(date,smblist,label='smb')
-# plt.plot(date,hmllist,label='hml')
-# plt.plot(date,flist,label='f')
+plt.plot(date,smblist,label='SMB')
+plt.plot(date,hmllist,label='HML')
+plt.plot(date,flist,label='F')
 # print(date)
-plt.plot(date,momlist,label='MOM')
-plt.title('MOM vs date')
+# plt.plot(date,momlist,label='MOM')
+plt.title('SMB+HML+F vs date')
 plt.xlabel('Date')
 plt.ylabel('Commulative return')
 plt.legend(loc=2)
-# plt.show()
+plt.show()
 
-print("company_name & model.coef & r_sq")
+# print("company_name & model.coef & r_sq")
 for company_name in companies:
 	y = np.array(companies[company_name]['PIreturn'])
 	y = y - r_f
 	# print(y)
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
-	print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," \\\\")
+	# print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," \\\\")
 	# print(y,model.intercept_,model.coef_)
 
-print("==============================================================================================================================================")
-print("==============================================================================================================================================")
-print("==============================================================================================================================================")
-print("==============================================================================================================================================")
-print("==============================================================================================================================================")
+# print("==============================================================================================================================================")
+# print("==============================================================================================================================================")
+# print("==============================================================================================================================================")
+# print("==============================================================================================================================================")
+# print("==============================================================================================================================================")
 
 for company_name in companies:
 	y = np.array(companies[company_name]['PIreturn'])
 	y = y - r_f
 	model = LinearRegression().fit(Z, y)
 	r_sq = model.score(Z, y)
-	print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," & ",round(model.coef_[3],3)," \\\\")
+	# print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," & ",round(model.coef_[3],3)," \\\\")

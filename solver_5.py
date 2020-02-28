@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import random as rand
+from datetime import datetime
 eps = 1
 r_f = 0.5
 
@@ -359,15 +360,18 @@ for i in range(1,len(momlist)):
 # print(smblist)
 # print(momlist)
 # print(hmllist)
-
+for i in range(len(date)):
+	date[i] = datetime.strptime(date[i], '%Y-%m-%d')
+#print(date)
 plt.plot(date,smblist,label='SMB')
 plt.plot(date,hmllist,label='HML')
 plt.plot(date,flist,label='F')
-# print(date)
+#print(date)
 # plt.plot(date,momlist,label='MOM')
 plt.title('SMB+HML+F vs date')
 plt.xlabel('Date')
 plt.ylabel('Commulative return')
+plt.locator_params(axis='x', nbins=10)
 plt.legend(loc=2)
 plt.show()
 

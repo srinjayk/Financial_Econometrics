@@ -4,7 +4,7 @@ from pandas import ExcelFile
 import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
-
+import random as rand
 eps = 1
 r_f = 0.5
 
@@ -201,17 +201,17 @@ for x in range(row_count):
 	LB = list(set(loserfirm) & set(bigfirm))
 	LS = list(set(loserfirm) & set(smallfirm))
 
-	print("===================================================")
-	print("			V    	   N    	G")
-	print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
-	print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
-	print("====================================================")
+	# print("===================================================")
+	# print("			V    	   N    	G")
+	# print("S  		%d    	%d  	%d"%(len(SV),len(SN),len(SG)))
+	# print("B  		%d    	%d  	%d"%(len(BV),len(BN),len(BG)))
+	# print("====================================================")
 
-	print("===================================================")
-	print("			W    	L")
-	print("S  		%d    	%d"%(len(WS),len(LS)))
-	print("B  		%d    	%d"%(len(WB),len(LB)))
-	print("====================================================")
+	# print("===================================================")
+	# print("			W    	L")
+	# print("S  		%d    	%d"%(len(WS),len(LS)))
+	# print("B  		%d    	%d"%(len(WB),len(LB)))
+	# print("====================================================")
 
 	# exit()
 	if len(BV)> 0:
@@ -279,9 +279,9 @@ for x in range(row_count):
 	mom = (wsreturn+wbreturn)/2 - (lsreturn+lbreturn)/2
 	momlist.append(mom)
 
-	three_factors.append([1,f-r_f,hml,smb])
+	three_factors.append([f-r_f,hml,smb])
 
-	four_factors.append([1,f-r_f,hml,smb,mom])
+	four_factors.append([f-r_f,hml,smb,mom])
 
 	t.append(x)
 
@@ -290,12 +290,11 @@ Z = np.array(four_factors, np.float32)
 X = np.array(three_factors, np.float32)
 # Xw = y regression
 # Now apply4 linear regression for each company
-
-# print(X)
+print("/////////////////////////////////")
 # print(hmllist)
 # print(smblist)
 # print(t)
-print(momlist)
+# print(momlist)
 # print(flist)
 
 smblist[0]=1
@@ -321,26 +320,36 @@ for i in range(1,len(momlist)):
 # plt.plot(date,smblist,label='smb')
 # plt.plot(date,hmllist,label='hml')
 # plt.plot(date,flist,label='f')
-plt.plot(date,momlist,label='mom')
+# print(date)
+plt.plot(date,momlist,label='MOM')
 plt.title('MOM vs date')
 plt.xlabel('Date')
 plt.ylabel('Commulative return')
 plt.legend(loc=2)
-plt.show()
+# plt.show()
 
+print("company_name & model.coef & r_sq")
 for company_name in companies:
-	y = companies[company_name]['ROI']
+	y = np.array(companies[company_name]['PIreturn'])
 	y = y - r_f
 	# print(y)
 	model = LinearRegression().fit(X, y)
 	r_sq = model.score(X, y)
+	# print(company_name," & ",model.coef_[1]," & ",model.coef_[2]," & ",model.coef_[3]," & ",r_sq," \\\\")
+	print(y,model.intercept_,model.coef_)
+print(X)
 
-	print(company_name," & ",model.coef_," & ",r_sq)
+exit()
 
+print("==============================================================================================================================================")
+print("==============================================================================================================================================")
+print("==============================================================================================================================================")
+print("==============================================================================================================================================")
+print("==============================================================================================================================================")
 
 for company_name in companies:
-	y = companies[company_name]['ROI']
+	y = np.array(companies[company_name]['PIreturn'])
 	y = y - r_f
 	model = LinearRegression().fit(Z, y)
 	r_sq = model.score(Z, y)
-	print(company_name," & ",model.coef_,"&",r_sq)
+	print(company_name," & ",model.coef_[1]," & ",model.coef_[2]," & ",model.coef_[3]," & ",model.coef_[4]," & ",r_sq," \\\\")

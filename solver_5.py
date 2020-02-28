@@ -5,6 +5,8 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 import matplotlib.pyplot as plt
 import random as rand
+from datetime import datetime
+
 eps = 1
 r_f = 0.5
 
@@ -153,6 +155,7 @@ for company_name in companies:
 three_factors = []
 four_factors = []
 new_mom = []
+capm=[]
 # print(row_count)
 
 for x in range(row_count):
@@ -324,11 +327,13 @@ for x in range(row_count):
 	momlist.append(mom)
 
 	three_factors.append([f-r_f,hml,smb])
-
+	capm.append([f-r_f])
 	four_factors.append([f-r_f,hml,smb,mom])
 
 	t.append(x)
 
+
+C = np.array(capm, np.float32)
 Z = np.array(four_factors, np.float32)
 # Now three_factors is a list of list
 X = np.array(three_factors, np.float32)
@@ -360,14 +365,18 @@ for i in range(1,len(momlist)):
 # print(momlist)
 # print(hmllist)
 
-plt.plot(date,smblist,label='SMB')
-plt.plot(date,hmllist,label='HML')
-plt.plot(date,flist,label='F')
-# print(date)
-# plt.plot(date,momlist,label='MOM')
-plt.title('SMB+HML+F vs date')
+for i in range(len(date)):
+	date[i] = datetime.strptime(date[i], '%Y-%m-%d')
+#print(date)
+# plt.plot(date,smblist,label='SMB')
+# plt.plot(date,hmllist,label='HML')
+# plt.plot(date,flist,label='F')
+#print(date)
+plt.plot(date,momlist,label='MOM')
+plt.title('MOM vs date')
 plt.xlabel('Date')
 plt.ylabel('Commulative return')
+plt.locator_params(axis='x', nbins=10)
 plt.legend(loc=2)
 plt.show()
 
@@ -381,6 +390,7 @@ for company_name in companies:
 	# print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," \\\\")
 	# print(y,model.intercept_,model.coef_)
 
+# print("3factor = ",np.average(r_sq))
 # print("==============================================================================================================================================")
 # print("==============================================================================================================================================")
 # print("==============================================================================================================================================")
@@ -393,3 +403,15 @@ for company_name in companies:
 	model = LinearRegression().fit(Z, y)
 	r_sq = model.score(Z, y)
 	# print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," & ",round(model.coef_[1],3)," & ",round(model.coef_[2],3)," & ",round(model.coef_[3],3)," \\\\")
+# print("4factor = ",np.average(r_sq))
+
+
+for company_name in companies:
+	y = np.array(companies[company_name]['PIreturn'])
+	y = y - r_f
+	# print(y)
+	model = LinearRegression().fit(C, y)
+	r_sq = model.score(C, y)
+	# print(company_name," & ",round(model.intercept_,3)," & ",round(model.coef_[0],3)," \\\\")
+	# print(y,model.intercept_,model.coef_)
+# print("CAPM = ",np.average(r_sq))

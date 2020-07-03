@@ -12,4 +12,4 @@ For more details and official presentation of the code repo refer Factor_Models.
 Acknowledging All the contributers for the joint collaboration:
  * Abhyuday Pandey
  * Ayush Kumar
- * Srinjay Kumar
+ * Deepesh Lall
